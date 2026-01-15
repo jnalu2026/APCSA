@@ -15,7 +15,7 @@ interface Priority {
     int getPriority();
 }
 
-// This mirrors the common "MiniQuiz" Complexity interface style
+// Complexity interface 
 interface Complexity {
     void setComplexity(int complexity);
     int getComplexity();
@@ -55,8 +55,7 @@ class Task implements Priority, Complexity, Comparable<Task> {
     }
 
     // Comparable: priority first, then complexity
-    // Here, higher numbers = "more important / more complex".
-    // If your class wants lower numbers to come first, flip the comparisons.
+    // Here, higher numbers = "more important / more complex"
     @Override
     public int compareTo(Task other) {
         if (this.priority != other.priority) {
