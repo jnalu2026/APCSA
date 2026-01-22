@@ -1,0 +1,105 @@
+//importing a scanner
+import java.util.Scanner;
+
+public class StudentDriver {
+
+    // Course Class
+    static class Course {
+        private String name;
+        private double testScore;
+
+        public Course(String name) {
+            this.name = name;
+            this.testScore = 0.0; // initialized to zero
+        }
+
+        public void setTestScore(double score) {
+            this.testScore = score;
+        }
+
+        public double getTestScore() {
+            return testScore;
+        }
+
+        public String getName() {
+            return name;
+        }
+//tostring method
+        @Override
+        public String toString() {
+            return name + " Test Score: " + testScore;
+        }
+    }
+
+    //Student class
+    static class Student {
+        private String name;
+        private String id;
+        private Course[] courses;
+
+        // default constructor
+        public Student() {
+            this("Unknown", "0000");
+        }
+
+        // overloaded constructor
+        public Student(String name, String id) {
+            this.name = name;
+            this.id = id;
+            courses = new Course[3];
+            courses[0] = new Course("Course 1");
+            courses[1] = new Course("Course 2");
+            courses[2] = new Course("Course 3");
+        }
+
+        public void setTestScore(int courseIndex, double score) {
+            courses[courseIndex].setTestScore(score);
+        }
+
+        public double getTestScore(int courseIndex) {
+            return courses[courseIndex].getTestScore();
+        }
+//method to get the average
+        public double getAverage() {
+            double sum = 0;
+            for (Course c : courses) {
+                sum += c.getTestScore();
+            }
+            return sum / courses.length;
+        }
+//creating string result
+        @Override
+        public String toString() {
+            String result = "Student: " + name + " (ID: " + id + ")\n";
+            for (int i = 0; i < courses.length; i++) {
+                result += (i + 1) + ". " + courses[i] + "\n";
+            }
+            result += "Average Score: " + getAverage();
+            return result;
+        }
+    }
+
+    // Driver Class
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter student name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter student ID: ");
+        String id = sc.nextLine();
+
+        Student student = new Student(name, id);
+
+        for (int i = 0; i < 3; i++) {
+            System.out.print("Enter test score for Course " + (i + 1) + ": ");
+            double score = sc.nextDouble();
+            student.setTestScore(i, score);
+        }
+
+        System.out.println("\n STUDENT REPORT ");
+        System.out.println(student);
+
+        sc.close();
+    }
+}
