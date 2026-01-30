@@ -1,0 +1,55 @@
+//importing a scanner
+import java.util.Random;
+
+public class WeekDaysExample {
+
+    public static void main(String[] args) {
+
+        // Initialize array with all 7 days of the week
+        String[] weekDays = {
+            "Monday", "Tuesday", "Wednesday",
+            "Thursday", "Friday", "Saturday", "Sunday"
+        };
+
+        System.out.println("All days of the week:");
+        printArray(weekDays);
+
+        // Java arrays cannot change size so we create a new array of size 5
+        String[] weekDaysResized = new String[5];
+
+        // Copy only the first 5 days into the new array
+        for (int i = 0; i < 5; i++) {
+            weekDaysResized[i] = weekDays[i];
+        }
+
+        System.out.println("\nWeekdays only:");
+        printArray(weekDaysResized);
+
+        // shuffle the weekdays randomly
+        shuffleArray(weekDaysResized);
+
+        System.out.println("\nShuffled weekdays:");
+        printArray(weekDaysResized);
+    }
+
+    // Method to print an array one item per row
+    public static void printArray(String[] arr) {
+        for (String day : arr) {
+            System.out.println(day);
+        }
+    }
+
+    // randomly shuffle the array
+    public static void shuffleArray(String[] arr) {
+        Random rand = new Random();
+
+        for (int i = arr.length - 1; i > 0; i--) {
+            int j = rand.nextInt(i + 1);
+
+            // swap 
+            String temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+}
