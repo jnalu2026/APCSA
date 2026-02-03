@@ -1,0 +1,51 @@
+//importing ultilities
+import java.util.*;
+
+public class CardDealer {
+
+    public static void main(String[] args) {
+
+        // Suits and ranks
+        String[] suits = {"Diamonds", "Hearts", "Clubs", "Spades"};
+        String[] ranks = {
+                "Ace","2","3","4","5","6","7","8","9","10",
+                "Jack","Queen","King"
+        };
+
+        // Create 2D deck 4 suits x 13 card numbers
+        String[][] deckOfCards = new String[4][13];
+
+        // Fill deck with cards
+        for (int s = 0; s < suits.length; s++) {
+            for (int r = 0; r < ranks.length; r++) {
+                deckOfCards[s][r] = ranks[r] + " of " + suits[s];
+            }
+        }
+
+        // Flatten deck into single list for easy shuffle
+        ArrayList<String> deckList = new ArrayList<>();
+
+        for (int s = 0; s < 4; s++) {
+            for (int r = 0; r < 13; r++) {
+                deckList.add(deckOfCards[s][r]);
+            }
+        }
+
+        // Shuffle the deck
+        Collections.shuffle(deckList);
+
+        // Deal 4 hands of 5 cards making sure there are no repeat
+        int cardIndex = 0;
+
+        for (int hand = 1; hand <= 4; hand++) {
+            System.out.println("Hand " + hand + ":");
+
+            for (int i = 0; i < 5; i++) {
+                System.out.println("  " + deckList.get(cardIndex));
+                cardIndex++;
+            }
+
+            System.out.println();
+        }
+    }
+}
