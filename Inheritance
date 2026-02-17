@@ -1,0 +1,577 @@
+package com.mycompany.driver;
+
+
+interface Speedometer {
+    public void setSpeed(double inSpeed);
+    public double getSpeed();
+}
+class Vehicle implements Speedometer {
+
+    // Base variables that are used between classes
+    protected String brandName = "";
+    protected double speed = 0.0;      // mph
+    protected int passengers = 0;
+    protected double cargoWeight = 0.0; // lbs
+
+    // Base default constructor
+    public Vehicle() {
+        brandName = "";
+        speed = 0.0;
+        passengers = 0;
+        cargoWeight = 0.0;
+    }
+
+    // Full constructor
+    public Vehicle(String inBrand, double inSpeed, int inPassengers, double inCargo) {
+        brandName = inBrand;
+        speed = inSpeed;
+        passengers = inPassengers;
+        cargoWeight = inCargo;
+    }
+
+    // Brand-only constructor (your screenshot had this)
+    public Vehicle(String inBrand) {
+        brandName = inBrand;
+        speed = 0.0;
+        passengers = 0;
+        cargoWeight = 0.0;
+    }
+    // Getters and setters
+    public String getBrand() {
+        return brandName;
+    }
+
+    public void setBrandName(String inBrand) {
+        brandName = inBrand;
+    }
+
+    // Speedometer interface methods
+    @Override
+    public double getSpeed() {
+        return speed;
+    }
+
+    @Override
+    public void setSpeed(double inSpeed) {
+        speed = inSpeed;
+    }
+
+    public int getPassengers() {
+        return passengers;
+    }
+    // Setter methods
+    public void setPassengers(int inPassengers) {
+        passengers = inPassengers;
+    }
+
+    public double getCargoWeight() {
+        return cargoWeight;
+    }
+
+    public void setCargoWeight(double inCargoWeight) {
+        cargoWeight = inCargoWeight;
+    }
+
+    // Base toString
+    @Override
+    public String toString() {
+        String result = "";
+        result += "Brand:\t\t" + getBrand() + "\n";
+        result += "Speed (mph):\t" + getSpeed() + "\n";
+        result += "Passengers:\t" + getPassengers() + "\n";
+        result += "Cargo (lbs):\t" + getCargoWeight() + "\n";
+        return result;
+    }
+}
+
+// Car class 
+class Car extends Vehicle {
+
+    protected int numDoors;
+    protected boolean electric;
+    protected String drivetrain; // "FWD", "RWD", "AWD", "4x4"
+
+    public Car() {
+        super();
+        numDoors = 4;
+        electric = false;
+        drivetrain = "FWD";
+    }
+
+    public Car(String brand, double speed, int passengers, double cargo,
+               int doors, boolean isElectric, String drivetrain) {
+        super(brand, speed, passengers, cargo);
+        this.numDoors = doors;
+        this.electric = isElectric;
+        this.drivetrain = drivetrain;
+    }
+
+    public int getNumDoors() {
+        return numDoors;
+    }
+
+    public void setNumDoors(int numDoors) {
+        this.numDoors = numDoors;
+    }
+
+    public boolean getElectric() {
+        return electric;
+    }
+
+    public void setElectric(boolean electric) {
+        this.electric = electric;
+    }
+
+    public String getDrivetrain() {
+        return drivetrain;
+    }
+
+    public void setDrivetrain(String drivetrain) {
+        this.drivetrain = drivetrain;
+    }
+
+    @Override
+    public String toString() {
+        String result = super.toString();
+        result += "Type:\t\tCar\n";
+        result += "Doors:\t\t" + numDoors + "\n";
+        result += "Electric:\t" + electric + "\n";
+        result += "Drivetrain:\t" + drivetrain + "\n";
+        return result;
+    }
+}
+
+
+// SportsCar extends Car
+class SportsCar extends Car {
+
+    private int horsepower;
+    private double zeroToSixty; // seconds
+    private boolean trackPackage;
+
+    public SportsCar() {
+        super();
+        horsepower = 0;
+        zeroToSixty = 0.0;
+        trackPackage = false;
+    }
+
+    public SportsCar(String brand, double speed, int passengers, double cargo,
+                     int doors, boolean isElectric, String drivetrain,
+                     int horsepower, double zeroToSixty, boolean trackPackage) {
+        super(brand, speed, passengers, cargo, doors, isElectric, drivetrain);
+        this.horsepower = horsepower;
+        this.zeroToSixty = zeroToSixty;
+        this.trackPackage = trackPackage;
+    }
+
+    public String launchControl() {
+        return "Launch control engaged!";
+    }
+
+    @Override
+    public String toString() {
+        String result = super.toString();
+        result += "SubType:\tSportsCar\n";
+        result += "HP:\t\t" + horsepower + "\n";
+        result += "0-60 (s):\t" + zeroToSixty + "\n";
+        result += "Track Pkg:\t" + trackPackage + "\n";
+        return result;
+    }
+}
+
+// PickupTruck extends Car
+class PickupTruck extends Car {
+
+    private int towCapacityLbs;
+    private int payloadLbs;
+    private boolean fourByFour;
+
+    public PickupTruck() {
+        super();
+        towCapacityLbs = 0;
+        payloadLbs = 0;
+        fourByFour = false;
+    }
+
+    public PickupTruck(String brand, double speed, int passengers, double cargo,
+                       int doors, boolean isElectric, String drivetrain,
+                       int towCapacityLbs, int payloadLbs, boolean fourByFour) {
+        super(brand, speed, passengers, cargo, doors, isElectric, drivetrain);
+        this.towCapacityLbs = towCapacityLbs;
+        this.payloadLbs = payloadLbs;
+        this.fourByFour = fourByFour;
+    }
+
+    public String tow() {
+        return "Towing engaged";
+    }
+
+    @Override
+    public String toString() {
+        String result = super.toString();
+        result += "SubType:\tPickupTruck\n";
+        result += "Tow (lbs):\t" + towCapacityLbs + "\n";
+        result += "Payload (lbs):\t" + payloadLbs + "\n";
+        result += "4x4:\t\t" + fourByFour + "\n";
+        return result;
+    }
+}
+
+// Boat extends Vehicle
+class Boat extends Vehicle {
+
+    protected double lengthFt;
+    protected String hullType;
+    protected boolean hasCabin;
+
+    public Boat() {
+        super();
+        lengthFt = 0.0;
+        hullType = "Unknown";
+        hasCabin = false;
+    }
+
+    public Boat(String brand, double speed, int passengers, double cargo,
+                double lengthFt, String hullType, boolean hasCabin) {
+        super(brand, speed, passengers, cargo);
+        this.lengthFt = lengthFt;
+        this.hullType = hullType;
+        this.hasCabin = hasCabin;
+    }
+
+    public String dropAnchor() {
+        return "Anchor dropped.";
+    }
+
+    @Override
+    public String toString() {
+        String result = super.toString();
+        result += "Type:\t\tBoat\n";
+        result += "Length (ft):\t" + lengthFt + "\n";
+        result += "Hull Type:\t" + hullType + "\n";
+        result += "Has Cabin:\t" + hasCabin + "\n";
+        return result;
+    }
+}
+// Sailboat extends Boat
+class Sailboat extends Boat {
+
+    private double sailAreaSqFt;
+    private boolean swingKeel;
+
+    public Sailboat() {
+        super();
+        sailAreaSqFt = 0.0;
+        swingKeel = false;
+    }
+
+    public Sailboat(String brand, double speed, int passengers, double cargo,
+                    double lengthFt, String hullType, boolean hasCabin,
+                    double sailAreaSqFt, boolean swingKeel) {
+        super(brand, speed, passengers, cargo, lengthFt, hullType, hasCabin);
+        this.sailAreaSqFt = sailAreaSqFt;
+        this.swingKeel = swingKeel;
+    }
+
+    public String raiseSails() {
+        return "Sails raised. Catching wind!";
+    }
+
+    @Override
+    public String toString() {
+        String result = super.toString();
+        result += "SubType:\tSailboat\n";
+        result += "Sail Area:\t" + sailAreaSqFt + " sq ft\n";
+        result += "Swing Keel:\t" + swingKeel + "\n";
+        return result;
+    }
+}
+// SpeedBoat extends Boat
+class SpeedBoat extends Boat {
+
+    private int horsepower;
+    private boolean twinEngines;
+
+    public SpeedBoat() {
+        super();
+        horsepower = 0;
+        twinEngines = false;
+    }
+
+    public SpeedBoat(String brand, double speed, int passengers, double cargo,
+                     double lengthFt, String hullType, boolean hasCabin,
+                     int horsepower, boolean twinEngines) {
+        super(brand, speed, passengers, cargo, lengthFt, hullType, hasCabin);
+        this.horsepower = horsepower;
+        this.twinEngines = twinEngines;
+    }
+
+    public String throttleUp() {
+        return "Throttle up! Hang on!";
+    }
+
+    @Override
+    public String toString() {
+        String result = super.toString();
+        result += "SubType:\tSpeedBoat\n";
+        result += "Horsepower:\t" + horsepower + " hp\n";
+        result += "Twin Engines:\t" + twinEngines + "\n";
+        return result;
+    }
+}
+// Airplane extends Vehicle
+class Airplane extends Vehicle {
+
+    protected int maxAltitudeFt;
+    protected String engineType; // "Jet" or "Prop"
+    protected int numEngines;
+
+    public Airplane() {
+        super();
+        maxAltitudeFt = 0;
+        engineType = "Unknown";
+        numEngines = 0;
+    }
+
+    public Airplane(String brand, double speed, int passengers, double cargo,
+                    int maxAltitudeFt, String engineType, int numEngines) {
+        super(brand, speed, passengers, cargo);
+        this.maxAltitudeFt = maxAltitudeFt;
+        this.engineType = engineType;
+        this.numEngines = numEngines;
+    }
+
+    public String deployLandingGear() {
+        return "Landing gear deployed.";
+    }
+
+    @Override
+    public String toString() {
+        String result = super.toString();
+        result += "Type:\t\tAirplane\n";
+        result += "Engine Type:\t" + engineType + "\n";
+        result += "# Engines:\t" + numEngines + "\n";
+        result += "Max Alt (ft):\t" + maxAltitudeFt + "\n";
+        return result;
+    }
+}
+// JetAirplane extends Airplane
+class JetAirplane extends Airplane {
+
+    private boolean autopilot;
+    private int wingspanFt;
+
+    public JetAirplane() {
+        super();
+        autopilot = false;
+        wingspanFt = 0;
+    }
+
+    public JetAirplane(String brand, double speed, int passengers, double cargo,
+                       int maxAltitudeFt, int numEngines,
+                       boolean autopilot, int wingspanFt) {
+        super(brand, speed, passengers, cargo, maxAltitudeFt, "Jet", numEngines);
+        this.autopilot = autopilot;
+        this.wingspanFt = wingspanFt;
+    }
+
+    public String enableAutopilot() {
+        autopilot = true;
+        return "Autopilot enabled.";
+    }
+
+    @Override
+    public String toString() {
+        String result = super.toString();
+        result += "SubType:\tJetAirplane\n";
+        result += "Autopilot:\t" + autopilot + "\n";
+        result += "Wingspan (ft):\t" + wingspanFt + "\n";
+        return result;
+    }
+}
+
+// Motorcycle extends Vehicle
+class Motorcycle extends Vehicle {
+ private int engineCC;
+    private boolean hasABS;
+
+    public Motorcycle() {
+        super();
+        engineCC = 0;
+        hasABS = false;
+    }
+
+    public Motorcycle(String brand, double speed, int passengers, double cargo,
+                      int engineCC, boolean hasABS) {
+        super(brand, speed, passengers, cargo);
+        this.engineCC = engineCC;
+        this.hasABS = hasABS;
+    }
+
+    public String wheelie() {
+        return "Wheelie! HAHA";
+    }
+
+    @Override
+    public String toString() {
+        String result = super.toString();
+        result += "Type:\t\tMotorcycle\n";
+        result += "Engine (cc):\t" + engineCC + "\n";
+        result += "ABS:\t\t" + hasABS + "\n";
+        return result;
+    }
+}
+
+// Train extends Vehicle
+class Train extends Vehicle {
+
+    private int numCars;
+    private boolean electricRail;
+    private String routeName;
+
+    public Train() {
+        super();
+        numCars = 0;
+        electricRail = false;
+        routeName = "Unknown";
+    }
+
+    public Train(String brand, double speed, int passengers, double cargo,
+                 int numCars, boolean electricRail, String routeName) {
+        super(brand, speed, passengers, cargo);
+        this.numCars = numCars;
+        this.electricRail = electricRail;
+        this.routeName = routeName;
+    }
+
+    public String blowHorn() {
+        return "HOOOOONK! Train horn!";
+    }
+
+    @Override
+    public String toString() {
+        String result = super.toString();
+        result += "Type:\t\tTrain\n";
+        result += "# Cars:\t\t" + numCars + "\n";
+        result += "Electric Rail:\t" + electricRail + "\n";
+        result += "Route:\t\t" + routeName + "\n";
+        return result;
+    }
+}
+
+// DRIVER (public) — tests everything 
+public class Driver {
+
+    public static void main(String[] args) {
+
+        // 2 classes inheriting from Car
+        SportsCar plaid = new SportsCar(
+                "Tesla Model S Plaid",
+                163.0,   // mph
+                5,
+                200.0,   // cargo lbs
+                4,
+                true,
+                "AWD",
+                1020,
+                1.99,
+                true
+        );
+
+        PickupTruck f150 = new PickupTruck(
+                "Ford F-150",
+                85.0,
+                5,
+                1200.0,
+                4,
+                false,
+                "4x4",
+                13500,  // tow lbs
+                2445,   // payload lbs
+                true
+        );
+
+        //2 boat classes
+        Sailboat catalina = new Sailboat(
+                "Catalina 22",
+                8.0,
+                4,
+                150.0,
+                23.8,
+                "Monohull",
+                false,
+                212.0,
+                true
+        );
+
+        SpeedBoat sundancer = new SpeedBoat(
+                "Sea Ray Sundancer 320",
+                44.7,
+                10,
+                500.0,
+                32.7,
+                "Planing",
+                true,
+                600,
+                true
+        );
+
+        // 2 airplane classes
+        JetAirplane boeing = new JetAirplane(
+                "Boeing 737",
+                530.0,
+                160,
+                3000.0,
+                41000,
+                2,
+                true,
+                117
+        );
+
+        // 2 other vehicle classes
+        Motorcycle r1 = new Motorcycle(
+                "Yamaha YZF-R1",
+                186.0,
+                2,
+                20.0,
+                998,
+                true
+        );
+
+        Train acela = new Train(
+                "Amtrak Acela",
+                160.0,
+                300,
+                1000.0,
+                8,
+                true,
+                "Northeast Corridor"
+        );
+
+        // Put them in one array (polymorphism: all are Vehicles)
+        Vehicle[] vehicles = {
+                plaid, f150, catalina, sundancer, boeing, r1, acela
+        };
+
+        // Print them all 
+        for (Vehicle v : vehicles) {
+            System.out.println("====================================");
+            System.out.println(v);
+        }
+
+        // Quick Speedometer demo
+        System.out.println("====================================");
+        System.out.println("Speedometer Demo:");
+        f150.setSpeed(120.0);
+        System.out.println("F-150 new speed: " + f150.getSpeed() + " mph");
+
+        // methods to be printed out
+        System.out.println("====================================");
+        System.out.println(plaid.launchControl());
+        System.out.println(sundancer.throttleUp());
+        System.out.println(boeing.enableAutopilot());
+        System.out.println(acela.blowHorn());
+    }
+}
+
