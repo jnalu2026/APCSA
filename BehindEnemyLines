@@ -1,0 +1,607 @@
+package behindenemylinesgame;
+
+import java.io.*;
+import java.util.*;
+
+// main game class here
+// runs the menu, story, game loop, and win/loss
+
+public class BehindEnemyLinesGame {
+
+    static Scanner scanner = new Scanner(System.in);
+    static Random random = new Random();
+
+    Soldier player;
+    ArrayList<Event> events;
+    FileManager fileManager;
+
+    int day;
+    boolean hasRadio;
+    boolean hasMap;
+    boolean rescuedPilot;
+
+    // constructor here
+    // loads events from the text file
+
+    public BehindEnemyLinesGame() {
+        fileManager = new FileManager();
+        events = fileManager.loadEvents();
+        day = 1;
+    }
+
+    // main method here
+    // starts the game
+
+    public static void main(String[] args) {
+        BehindEnemyLinesGame game = new BehindEnemyLinesGame();
+        game.start();
+    }
+
+    // menu here
+
+    public void start() {
+
+        showIntro();
+
+        while (true) {
+
+            System.out.println("\n1. Start New Game");
+            System.out.println("2. Load Game");
+            System.out.println("3. Exit");
+            System.out.print("Choice: ");
+
+            int choice = readInt();
+
+            if (choice == 1) {
+                startNewGame();
+                playGame();
+            } else if (choice == 2) {
+                loadGame();
+                playGame();
+            } else if (choice == 3) {
+                System.out.println("Goodbye.");
+                break;
+            } else {
+                System.out.println("Pick 1-3.");
+            }
+        }
+    }
+
+    // intro text here
+
+    public void showIntro() {
+        System.out.println("=================================");
+        System.out.println("       BEHIND ENEMY LINES");
+        System.out.println("=================================");
+        System.out.println("Your helicopter crashed in enemy land.");
+        System.out.println("Travel 120 distance to escape.");
+        System.out.println("If health, energy, hunger, or stealth hits 0 you lose.");
+        System.out.println("The game will show what stats change after choices.");
+    }
+
+    // new game reset here
+
+    public void startNewGame() {
+        player = new Soldier();
+
+        day = 1;
+        hasRadio = false;
+        hasMap = false;
+        rescuedPilot = false;
+    }
+
+    // gameplay loop here
+
+    public void playGame() {
+
+        boolean playing = true;
+
+        while (playing) {
+
+            showStats();
+
+            System.out.println("\n1. Move Forward");
+            System.out.println("2. Search Area");
+            System.out.println("3. Rest");
+            System.out.println("4. Eat Rations");
+            System.out.println("5. Save Game");
+            System.out.println("6. Quit");
+            System.out.print("Choice: ");
+
+            int choice = readInt();
+
+            if (choice == 1) {
+                moveForward();
+            } else if (choice == 2) {
+                searchArea();
+            } else if (choice == 3) {
+                rest();
+            } else if (choice == 4) {
+                eatRations();
+            } else if (choice == 5) {
+                saveGame();
+                continue;
+            } else if (choice == 6) {
+                break;
+            } else {
+                System.out.println("Invalid.");
+                continue;
+            }
+
+            // daily stat drain here
+
+            player.energy -= 5;
+            player.hunger -= 7;
+
+            showChange("Daily survival drain", 0, -5, -7, 0, 0, 0);
+
+            // random event chance here
+
+            if (random.nextInt(100) < 80) {
+                randomEvent();
+            } else {
+                System.out.println("No random event today.");
+            }
+
+            storyMoment();
+
+            fixStats();
+
+            // win or lose check here
+
+            if (player.distance >= 120) {
+                winGame();
+                playing = false;
+            } else if (player.health <= 0 || player.energy <= 0 ||
+                       player.hunger <= 0 || player.stealth <= 0) {
+                loseGame();
+                playing = false;
+            } else {
+                day++;
+            }
+        }
+    }
+
+    // show stats here
+
+    public void showStats() {
+
+        System.out.println("\n-----------------------------");
+        System.out.println("Day: " + day);
+        System.out.println("Health: " + player.health);
+        System.out.println("Energy: " + player.energy);
+        System.out.println("Hunger: " + player.hunger);
+        System.out.println("Stealth: " + player.stealth);
+        System.out.println("Distance: " + player.distance + "/120");
+        System.out.println("Rations: " + player.rations);
+        System.out.println("-----------------------------");
+    }
+
+    // move action here
+
+    public void moveForward() {
+
+        int gain = random.nextInt(11) + 10;
+
+        if (hasMap) {
+            gain += 5;
+        }
+
+        if (rescuedPilot) {
+            gain += 3;
+        }
+
+        player.distance += gain;
+        player.energy -= 12;
+        player.hunger -= 5;
+        player.stealth -= 3;
+
+        System.out.println("\nYou moved forward through the jungle.");
+        showChange("Move Forward", 0, -12, -5, -3, gain, 0);
+    }
+
+    // search action here
+
+    public void searchArea() {
+
+        int roll = random.nextInt(100);
+
+        System.out.println("\nYou searched the area.");
+
+        if (roll < 35) {
+            player.rations++;
+            System.out.println("You found food.");
+            showChange("Search Area", 0, -8, 0, 0, 0, 1);
+        } else if (roll < 55) {
+            hasMap = true;
+            System.out.println("You found a map.");
+            showChange("Search Area", 0, -8, 0, 0, 0, 0);
+            System.out.println("Map bonus unlocked: future movement gets extra distance.");
+        } else if (roll < 75) {
+            hasRadio = true;
+            System.out.println("You found a radio.");
+            showChange("Search Area", 0, -8, 0, 0, 0, 0);
+            System.out.println("Radio bonus unlocked: special story event later.");
+        } else {
+            player.stealth -= 10;
+            System.out.println("Enemy patrol heard you.");
+            showChange("Search Area", 0, -8, 0, -10, 0, 0);
+        }
+
+        player.energy -= 8;
+    }
+
+    // rest action here
+
+    public void rest() {
+
+        player.health += 10;
+        player.energy += 18;
+
+        System.out.println("\nYou rested in cover.");
+        showChange("Rest", 10, 18, 0, 0, 0, 0);
+    }
+
+    // eat action here
+
+    public void eatRations() {
+
+        if (player.rations > 0) {
+            player.rations--;
+            player.hunger += 25;
+            player.health += 5;
+
+            System.out.println("\nYou ate rations.");
+            showChange("Eat Rations", 5, 0, 25, 0, 0, -1);
+        } else {
+            System.out.println("\nNo food left.");
+            showChange("Eat Rations", 0, 0, 0, 0, 0, 0);
+        }
+    }
+
+    // random events here
+
+    public void randomEvent() {
+
+        if (events.size() == 0) {
+            return;
+        }
+
+        Event e = events.get(random.nextInt(events.size()));
+
+        System.out.println("\nEVENT: " + e.text);
+
+        player.health += e.healthChange;
+        player.energy += e.energyChange;
+        player.hunger += e.hungerChange;
+        player.stealth += e.stealthChange;
+
+        showChange("Random Event", e.healthChange, e.energyChange,
+                e.hungerChange, e.stealthChange, 0, 0);
+    }
+
+    // story choices here
+
+    public void storyMoment() {
+
+        if (day == 3 && !rescuedPilot) {
+
+            System.out.println("\nYou hear a downed pilot yelling for help.");
+            System.out.println("1. Help him");
+            System.out.println("2. Leave");
+
+            int choice = readInt();
+
+            if (choice == 1) {
+                rescuedPilot = true;
+                player.health -= 8;
+
+                System.out.println("You saved the pilot.");
+                showChange("Story Choice", -8, 0, 0, 0, 0, 0);
+                System.out.println("Pilot bonus unlocked: future movement gets extra distance.");
+            } else {
+                System.out.println("You left the pilot behind.");
+                showChange("Story Choice", 0, 0, 0, 0, 0, 0);
+            }
+        }
+
+        if (day == 5 && hasRadio) {
+            player.distance += 10;
+            hasRadio = false;
+
+            System.out.println("\nYou sent a radio signal.");
+            showChange("Radio Signal", 0, 0, 0, 0, 10, 0);
+        }
+    }
+
+    // shows stat changes here
+
+    public void showChange(String action, int health, int energy,
+                           int hunger, int stealth, int distance, int rations) {
+
+        System.out.println("----- " + action + " Changes -----");
+
+        if (health != 0) {
+            System.out.println("Health: " + showNumber(health));
+        }
+
+        if (energy != 0) {
+            System.out.println("Energy: " + showNumber(energy));
+        }
+
+        if (hunger != 0) {
+            System.out.println("Hunger: " + showNumber(hunger));
+        }
+
+        if (stealth != 0) {
+            System.out.println("Stealth: " + showNumber(stealth));
+        }
+
+        if (distance != 0) {
+            System.out.println("Distance: " + showNumber(distance));
+        }
+
+        if (rations != 0) {
+            System.out.println("Rations: " + showNumber(rations));
+        }
+
+        if (health == 0 && energy == 0 && hunger == 0 &&
+            stealth == 0 && distance == 0 && rations == 0) {
+            System.out.println("No stat changes.");
+        }
+
+        System.out.println("-----------------------------");
+    }
+
+    // makes positive numbers show plus sign here
+
+    public String showNumber(int number) {
+
+        if (number > 0) {
+            return "+" + number;
+        }
+
+        return "" + number;
+    }
+
+    // caps stats from 0 to 100 here
+
+    public void fixStats() {
+
+        if (player.health > 100) player.health = 100;
+        if (player.energy > 100) player.energy = 100;
+        if (player.hunger > 100) player.hunger = 100;
+        if (player.stealth > 100) player.stealth = 100;
+
+        if (player.health < 0) player.health = 0;
+        if (player.energy < 0) player.energy = 0;
+        if (player.hunger < 0) player.hunger = 0;
+        if (player.stealth < 0) player.stealth = 0;
+    }
+
+    // win ending here
+
+    public void winGame() {
+
+        int score = player.health + player.energy + player.hunger
+                + player.stealth + player.distance - (day * 2);
+
+        System.out.println("\nMISSION SUCCESS");
+        System.out.println("You reached the extraction zone.");
+        System.out.println("Days: " + day);
+        System.out.println("Score: " + score);
+    }
+
+    // lose ending here
+
+    public void loseGame() {
+        System.out.println("\nMISSION FAILED");
+        System.out.println("One of your survival stats reached 0.");
+    }
+
+    // reads int safely here
+
+    public int readInt() {
+
+        while (!scanner.hasNextInt()) {
+            scanner.next();
+            System.out.print("Enter a number: ");
+        }
+
+        return scanner.nextInt();
+    }
+
+    // save game here
+
+    public void saveGame() {
+        fileManager.saveGame(player, day, hasRadio, hasMap, rescuedPilot);
+        System.out.println("Game saved.");
+    }
+
+    // load game here
+
+    public void loadGame() {
+
+        SaveData data = fileManager.loadGame();
+
+        if (data == null) {
+            System.out.println("No save found.");
+            startNewGame();
+        } else {
+            player = data.player;
+            day = data.day;
+            hasRadio = data.hasRadio;
+            hasMap = data.hasMap;
+            rescuedPilot = data.rescuedPilot;
+
+            System.out.println("Game loaded.");
+        }
+    }
+}
+
+// soldier class here
+// stores player stats
+
+class Soldier {
+    int health = 100;
+    int energy = 100;
+    int hunger = 100;
+    int stealth = 100;
+    int distance = 0;
+    int rations = 2;
+}
+
+// event class here
+// stores random event changes
+
+class Event {
+
+    String text;
+    int healthChange;
+    int energyChange;
+    int hungerChange;
+    int stealthChange;
+
+    // event constructor here
+
+    public Event(String t, int h, int e, int hu, int s) {
+        text = t;
+        healthChange = h;
+        energyChange = e;
+        hungerChange = hu;
+        stealthChange = s;
+    }
+}
+
+// save data class here
+// helps loading saved game
+
+class SaveData {
+    Soldier player;
+    int day;
+    boolean hasRadio;
+    boolean hasMap;
+    boolean rescuedPilot;
+}
+
+// file manager class here
+// handles text files
+
+class FileManager {
+
+    // loads events here
+
+    public ArrayList<Event> loadEvents() {
+
+        ArrayList<Event> list = new ArrayList<Event>();
+
+        try {
+
+            File file = new File("events.txt");
+
+            // makes file if missing
+
+            if (!file.exists()) {
+
+                PrintWriter out = new PrintWriter(file);
+
+                out.println("Snake bite,-10,0,0,-5");
+                out.println("Found berries,0,0,15,0");
+                out.println("Medical kit,12,0,0,0");
+                out.println("Enemy patrol,0,0,0,-12");
+                out.println("Fresh water,0,10,8,0");
+
+                out.close();
+            }
+
+            Scanner input = new Scanner(file);
+
+            while (input.hasNextLine()) {
+
+                String line = input.nextLine();
+                String[] p = line.split(",");
+
+                if (p.length == 5) {
+                    list.add(new Event(
+                            p[0],
+                            Integer.parseInt(p[1]),
+                            Integer.parseInt(p[2]),
+                            Integer.parseInt(p[3]),
+                            Integer.parseInt(p[4])
+                    ));
+                }
+            }
+
+            input.close();
+
+        } catch (Exception e) {
+            System.out.println("Error loading events.");
+        }
+
+        return list;
+    }
+
+    // saves game here
+
+    public void saveGame(Soldier s, int day,
+                         boolean radio, boolean map, boolean pilot) {
+
+        try {
+
+            PrintWriter out = new PrintWriter("savegame.txt");
+
+            out.println(s.health);
+            out.println(s.energy);
+            out.println(s.hunger);
+            out.println(s.stealth);
+            out.println(s.distance);
+            out.println(s.rations);
+
+            out.println(day);
+            out.println(radio);
+            out.println(map);
+            out.println(pilot);
+
+            out.close();
+
+        } catch (Exception e) {
+            System.out.println("Save error.");
+        }
+    }
+
+    // loads save here
+
+    public SaveData loadGame() {
+
+        try {
+
+            Scanner in = new Scanner(new File("savegame.txt"));
+
+            Soldier s = new Soldier();
+
+            s.health = Integer.parseInt(in.nextLine());
+            s.energy = Integer.parseInt(in.nextLine());
+            s.hunger = Integer.parseInt(in.nextLine());
+            s.stealth = Integer.parseInt(in.nextLine());
+            s.distance = Integer.parseInt(in.nextLine());
+            s.rations = Integer.parseInt(in.nextLine());
+
+            SaveData data = new SaveData();
+
+            data.player = s;
+            data.day = Integer.parseInt(in.nextLine());
+            data.hasRadio = Boolean.parseBoolean(in.nextLine());
+            data.hasMap = Boolean.parseBoolean(in.nextLine());
+            data.rescuedPilot = Boolean.parseBoolean(in.nextLine());
+
+            in.close();
+
+            return data;
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+}
+
+
